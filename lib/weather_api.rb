@@ -8,29 +8,37 @@ API_HOST = 'https://api.openweathermap.org'
 # A module that calls the Open Weather Map API to get weather forecast data
 # The data response will be parsed and normalized
 module WeatherAPI
-  # Given a city string fetch the forecast for it
-  def self.fetch_for_city(city, units = 'imperial')
-    raise "A city string must be provided." unless city
+  # Given a city name or zip fetch the weather forecast
+  # @param location [String] Either a city name or a zip code.
+  # @param zip [Boolean] Determines if the location is a zip code.
+  # @param unit [String] Determines the type of temperature units to request. Default: Kelvin, Metric: Celsius, Imperial: Fahrenheit.
+  # @return [Forecast] A Forecast object with the normalized weather conditions for the location.
+  def self.fetch_forecast(location, zip = false, unit = 'imperial')
+    raise "A location must be provided." unless location
 
     params = {
-      q: city,
-      units: units,
+      units: unit,
       appid: API_KEY
     }
+    # If the zip boolean is set, use the zip param instead
+    zip ? (params[:zip] = location) : (params[:q] = location)
+
     response = HTTParty.get("#{API_HOST}/data/2.5/forecast", query: params)
     parsed = JSON.parse(response.body, object_class: OpenStruct)
 
     # Return the error message from the API
     raise parsed["message"] if (response.code > 400)
 
-    # TODO: Initialize and return a Forecast Object
+    Forecast.new(unit, parsed)
   end
 
   class Forecast
     # @return [String] Unit of temperature. Default: Kelvin, Metric: Celsius, Imperial: Fahrenheit.
     attr_reader :temperature_unit
+
     # @return [Array<WeatherConditions>] List of all weather conditions for the city.
     attr_reader :weather_conditions
+
     # @return [City] Information of the city with the forecast data
     attr_reader :city
 

@@ -3,31 +3,57 @@ require 'weather_api'
 describe "WeatherAPI" do
   let(:response) { JSON.parse(File.read("spec/fixtures/full_forecast_response.json"), object_class: OpenStruct) }
 
-  describe '.fetch_for_city' do
+  describe '.fetch_forecast' do
     context 'when called without arguments' do
       it 'responds with an error' do
-        expect { WeatherAPI.fetch_for_city() }.to raise_error(ArgumentError)
+        expect { WeatherAPI.fetch_forecast() }.to raise_error(ArgumentError)
       end
     end
 
     context 'when called with a location' do
       context 'when the location is nil' do
         it 'responds with an error' do
-          expect { WeatherAPI.fetch_for_city(nil) }.to raise_error('A city string must be provided.')
+          expect { WeatherAPI.fetch_forecast(nil) }.to raise_error('A location must be provided.')
         end
       end
 
       context 'when the location is not valid' do
         it 'responds with an error' do
-          expect { WeatherAPI.fetch_for_city("Middle of Nowhere") }.to raise_error('city not found')
+          expect { WeatherAPI.fetch_forecast("Middle of Nowhere") }.to raise_error('city not found')
         end
       end
 
-      # context 'when the location is valid' do
-      #   it 'responds with weather for that location' do
-      #     expect(WeatherAPI.fetch_for_city("New York")).to eq({})
-      #   end
-      # end
+      context 'when the location is valid' do
+        it 'responds with weather for that location' do
+          forecast = WeatherAPI.fetch_forecast("New York")
+
+          expect(forecast.class).to eq(WeatherAPI::Forecast)
+          expect(forecast.city.name).to eq("New York")
+          expect(forecast.weather_conditions.length).to eq(40)
+          expect(forecast.temperature_unit).to eq 'imperial'
+        end
+      end
+
+      context 'when the location is a zip code' do
+        it 'responds with the weather for the zip code' do
+          forecast = WeatherAPI.fetch_forecast("90210", true)
+
+          expect(forecast.class).to eq(WeatherAPI::Forecast)
+          expect(forecast.city.name).to eq("Beverly Hills")
+          expect(forecast.weather_conditions.length).to eq(40)
+          expect(forecast.temperature_unit).to eq 'imperial'
+        end
+      end
+
+      context 'when the unit is not default ' do
+        it 'responds with forcast data in the specified unit' do
+          forecast = WeatherAPI.fetch_forecast("90210", true, 'metric')
+
+          expect(forecast.class).to eq(WeatherAPI::Forecast)
+          expect(forecast.city.name).to eq("Beverly Hills")
+          expect(forecast.temperature_unit).to eq 'metric'
+        end
+      end
     end
   end
 
