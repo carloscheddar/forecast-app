@@ -37,6 +37,14 @@ const Forecast = () => {
   const [forecast, setForecast] = useState({})
   const [location, setLocation] = useState('')
 
+  // Return only 1 weather condition per day
+  const condensedForecast = forecast?.weather_conditions?.reduce((acc, condition) => {
+    const day = new Date(condition.date).toDateString()
+    acc[day] = condition
+
+    return acc
+  }, {})
+
   // Fetch forecast data from the rails API
   useEffect(() => {
     const fetchData = async () => {
@@ -91,7 +99,8 @@ const Forecast = () => {
       </div>
 
       <div id="future" className="wrapper">
-        {forecast?.weather_conditions?.map((condition) => (
+        {/* Remove the first element since it's already displayed in the main section */}
+        {Object.values(condensedForecast).slice(1, 6).map((condition) => (
           <FutureSection weatherCondition={condition} key={condition?.date}/>
         ))}
       </div>
