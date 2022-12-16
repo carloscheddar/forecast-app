@@ -67,18 +67,32 @@ const Forecast = () => {
     setLocation(event.target.value)
   }
 
+  // Fetch the current coordinates from the user
+  // Because our API only supports cities and zip codes we call a geocoder to fetch that info from the coords
+  const fetchCurrentLocation = () => {
+    navigator.geolocation.getCurrentPosition(async (result) => {
+      const { latitude, longitude } = result.coords
+
+      const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+      const response = await fetch(url)
+      const geocoded = await response.json()
+
+      setLocation(`${geocoded.city}, ${geocoded.countryCode}`)
+    })
+  }
+
   const main = forecast?.weather_conditions?.[0]
   if (!main) return null
 
   return (
     <div>
       <div id="current" className="wrapper">
-        {/* <nav>
-          <button id="locateBtn">
+        <nav>
+          <button id="locateBtn" onClick={fetchCurrentLocation}>
             <FontAwesomeIcon icon={faLocationArrow} />
           </button>
-          <button id="unitBtn" data-units="f">f</button>
-        </nav> */}
+          {/* <button id="unitBtn" data-units="f">f</button> */}
+        </nav>
         <div id="search">
           <input id="search" type="text" name="location" onChange={debounce(updateInput, 250)} />
           <FontAwesomeIcon icon={faMagnifyingGlass} />
