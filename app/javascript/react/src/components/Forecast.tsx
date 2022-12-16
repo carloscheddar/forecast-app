@@ -42,6 +42,7 @@ const Forecast = () => {
   const [forecast, setForecast] = useState({})
   const [location, setLocation] = useState('')
   const [unit, setUnit] = useState('f')
+  const [cached, setCached] = useState(false)
 
   // Return only 1 weather condition per day
   const condensedForecast = forecast?.weather_conditions?.reduce((acc, condition) => {
@@ -65,7 +66,10 @@ const Forecast = () => {
       const json = await response.json()
 
       // Only set the forecast if the API responds successfully
-      if (response.status === 200) setForecast(json.forecast)
+      if (response.status === 200) {
+        setForecast(json.forecast)
+        setCached(json.cached)
+      }
     }
     fetchData()
   }, [location, unit])
@@ -110,7 +114,10 @@ const Forecast = () => {
           <FontAwesomeIcon icon={faMagnifyingGlass} />
         </div>
 
-        <h1 className="location">{forecast?.city?.name}, {forecast?.city?.country}</h1>
+        <h1 className="location">
+          <span>{forecast?.city?.name}, {forecast?.city?.country}</span>
+          { cached && (<span title="Reading forecast from cache">*</span>)}
+        </h1>
         <h2 className="date">{new Date(main?.date).toLocaleDateString('en', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h2>
         <div className="weatherIcon">
           <FontAwesomeIcon icon={WEATHER_ICONS[main?.weather.toLowerCase()]} size="6x" />
