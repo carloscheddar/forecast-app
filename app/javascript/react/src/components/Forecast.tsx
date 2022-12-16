@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import queryString from 'qs'
 import './styles.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSun, faCloudRain, faCloud, faSnowflake, faLocationArrow } from '@fortawesome/free-solid-svg-icons'
+import { faSun, faCloudRain, faCloud, faSnowflake, faLocationArrow, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
+import { debounce } from 'lodash'
 
 // Object that maps weather types to icons
 const WEATHER_ICONS = {
@@ -34,22 +35,29 @@ const FutureSection = ({ weatherCondition }) => {
 
 const Forecast = () => {
   const [forecast, setForecast] = useState({})
+  const [location, setLocation] = useState('')
 
   // Fetch forecast data from the rails API
   useEffect(() => {
     const fetchData = async () => {
       const params = queryString.stringify({
         forecast: {
-          location: '90210'
+          location: location || 'New York'
         }
       })
       const url = `/forecast?${params}`
       const response = await fetch(url)
       const json = await response.json()
-      setForecast(json.forecast)
+
+      // Only set the forecast if the API responds successfully
+      if (response.status === 200) setForecast(json.forecast)
     }
     fetchData()
-  }, [])
+  }, [location])
+
+  const updateInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLocation(event.target.value)
+  }
 
   const main = forecast?.weather_conditions?.[0]
   if (!main) return null
@@ -63,6 +71,10 @@ const Forecast = () => {
           </button>
           <button id="unitBtn" data-units="f">f</button>
         </nav> */}
+        <div id="search">
+          <input id="search" type="text" name="location" onChange={debounce(updateInput, 250)} />
+          <FontAwesomeIcon icon={faMagnifyingGlass} />
+        </div>
 
         <h1 className="location">{forecast?.city?.name}, {forecast?.city?.country}</h1>
         <h2 className="date">{new Date(main?.date).toLocaleDateString('en', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h2>
