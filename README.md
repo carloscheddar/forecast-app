@@ -3,6 +3,8 @@ This application will render a 5 day weather forecast by fetching the data from 
 
 The rendered application will show icons for various weather conditions, highs and lows as well as a brief description of the weather. The design is fully responsive and condensed on mobile browsers.
 
+Demo: https://forecast.fly.dev/
+
 ### Preview
 ![image](https://user-images.githubusercontent.com/3360539/208159906-abb67546-76a2-4557-9111-60d2dfbc1dd1.png)
 
@@ -37,5 +39,5 @@ The app consists of a Rails backend and a React frontend. Rails will only render
 Test are created with Rspec. The weater_api as well as the forecast controller are fully tested using real-time request tests. Redis is required on the test environment for the cache tests to pass.
 `bundle exec rspec`
 
-# Acknowledgment
+### Acknowledgment
 Thanks to [Tiffany Du](https://tiffanydu.com/) for the publishing a nice looking weather UI that was simple to implement on my app.
