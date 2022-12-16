@@ -97,7 +97,7 @@ module WeatherAPI
       @temperature = object.dig(:main, :temp)
       @feels_like = object.dig(:main, :feels_like)
       @temperature_low = object.dig(:main, :temp_min)
-      @temperature_high = object.dig(:main, :temp_high)
+      @temperature_high = object.dig(:main, :temp_max)
       @humidity = object.dig(:main, :humidity)
     end
   end

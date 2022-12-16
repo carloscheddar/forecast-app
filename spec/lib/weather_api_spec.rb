@@ -69,7 +69,7 @@ describe "WeatherAPI" do
       expect(normalized.temperature).to eq 21.32
       expect(normalized.feels_like).to eq 21.28
       expect(normalized.temperature_low).to eq 21.32
-      expect(normalized.temperature_high).to eq nil
+      expect(normalized.temperature_high).to eq 24.16
       expect(normalized.humidity).to eq 68
     end
   end
