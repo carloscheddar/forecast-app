@@ -6,7 +6,7 @@ class ForecastController < ApplicationController
       # Return the cached result if it exists
       if $redis.exists?(params_key)
         cached = JSON.parse($redis.get(params_key))
-        return render json: { forecast: cached }
+        return render json: { forecast: cached, cached: true }
       end
 
       @forecast = WeatherAPI.fetch_forecast(
@@ -17,7 +17,7 @@ class ForecastController < ApplicationController
       # Store the fetched forecast for 30 min
       $redis.set(params_key, @forecast.to_json, ex: 1800)
 
-      return render json: { forecast: @forecast }
+      return render json: { forecast: @forecast, cached: false }
     rescue => e
       return render json: { message: "There was an error fetching the forecast." }, status: :unprocessable_entity
     end

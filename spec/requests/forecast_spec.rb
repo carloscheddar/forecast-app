@@ -56,7 +56,10 @@ RSpec.describe 'Forecasts', type: :request do
         allow(WeatherAPI).to(receive(:fetch_forecast)).and_call_original
 
         get '/forecast', params: { forecast: { location: '90210', unit: 'metric' }}
+        expect(JSON.parse(response.body)['cached']).to eq(false)
+
         get '/forecast', params: { forecast: { location: '90210', unit: 'metric' }}
+        expect(JSON.parse(response.body)['cached']).to eq(true)
 
         expect(WeatherAPI).to have_received(:fetch_forecast).once
 
