@@ -1,5 +1,4 @@
 require 'httpparty'
-require 'debug'
 
 # API key generously donated by a codepen user
 API_KEY = '8fa23948b5ec171a5a4e67936002ce76'
