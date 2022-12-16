@@ -13,6 +13,11 @@ const WEATHER_ICONS = {
   'snow': faSnowflake,
 }
 
+const UNITS = {
+  'f': 'imperial',
+  'c': 'metric'
+}
+
 // Handles each future section for the forecast
 const FutureSection = ({ weatherCondition }) => {
   if (!weatherCondition) return null
@@ -36,6 +41,7 @@ const FutureSection = ({ weatherCondition }) => {
 const Forecast = () => {
   const [forecast, setForecast] = useState({})
   const [location, setLocation] = useState('')
+  const [unit, setUnit] = useState('f')
 
   // Return only 1 weather condition per day
   const condensedForecast = forecast?.weather_conditions?.reduce((acc, condition) => {
@@ -50,7 +56,8 @@ const Forecast = () => {
     const fetchData = async () => {
       const params = queryString.stringify({
         forecast: {
-          location: location || 'New York'
+          location: location || 'New York',
+          unit: UNITS[unit],
         }
       })
       const url = `/forecast?${params}`
@@ -61,7 +68,7 @@ const Forecast = () => {
       if (response.status === 200) setForecast(json.forecast)
     }
     fetchData()
-  }, [location])
+  }, [location, unit])
 
   const updateInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLocation(event.target.value)
@@ -81,6 +88,11 @@ const Forecast = () => {
     })
   }
 
+  const toggleUnit = () => {
+    unit === 'f' ? setUnit('c') : setUnit('f')
+  }
+
+  // The current weather of the requested location
   const main = forecast?.weather_conditions?.[0]
   if (!main) return null
 
@@ -91,7 +103,7 @@ const Forecast = () => {
           <button id="locateBtn" onClick={fetchCurrentLocation}>
             <FontAwesomeIcon icon={faLocationArrow} />
           </button>
-          {/* <button id="unitBtn" data-units="f">f</button> */}
+          <button id="unitBtn" onClick={toggleUnit}>{unit}</button>
         </nav>
         <div id="search">
           <input id="search" type="text" name="location" onChange={debounce(updateInput, 250)} />
