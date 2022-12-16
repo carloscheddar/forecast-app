@@ -264,6 +264,8 @@ nav {
     font-size: 1.1rem;
     padding: 0;
     margin-bottom: 3%;
+    display: flex;
+    justify-content: center;
   }
   #future > .container {
     border-bottom: none;
